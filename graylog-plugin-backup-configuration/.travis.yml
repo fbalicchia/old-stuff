@@ -1,0 +1,32 @@
+sudo: required
+dist: trusty
+language: java
+jdk:
+- oraclejdk8
+install:
+- mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dskip.web.build=true -B
+  -V
+script:
+- mvn test -Dskip.web.build=true -B
+addons:
+  apt:
+    packages:
+    - rpm
+before_deploy:
+- mvn jdeb:jdeb && export RELEASE_DEB_FILE=$(ls target/*.deb)
+- mvn rpm:rpm && export RELEASE_RPM_FILE=$(find target/ -name '*.rpm' | tail -1)
+- rm -f target/original-*.jar
+- export RELEASE_PKG_FILE=$(ls target/*.jar)
+- echo "Deploying release to GitHub releases"
+deploy:
+  provider: releases
+  file:
+  - "${RELEASE_PKG_FILE}"
+  - "${RELEASE_DEB_FILE}"
+  - "${RELEASE_RPM_FILE}"
+  skip_cleanup: true
+  on:
+    tags: true
+    jdk: oraclejdk8
+  api-key:
+    secure: XaTXBpkGY3z9usbo1ZJweaSHNql9RE8hpW6nLNmNXxT4jVnlkxL+caiyHOCYTqTNvnC1b5Vy/6wubDuy4XwExvNpmyAbQaZkDjvwimVEUC2mcFCXRxz3D9aCu6hvaQfCnY/BQzEde1lccLPnawfnfkXeY1joDOPV07/RRmVPyw6GeTbR4EtgiKo+lqw/VhA1hAV3zLti239ZpaIYEF6Zvy4mJ9/+qTrEcCB5yFtSim0aTRVwOo8StgKIcd2I32Re1+IIq6NNj/PTLkNWUMjefDkmlJ99YwfdDRqmco0CI2fY/UxWmVOCxLgqFQd+KZd/cXDMa7qtrexjXt0ObZXLldZhE5RtvvggjkxGqbHp60FdQ/pbMn811Ox79FWnFUHNrCeNLWyMfchosnul6EjKV3yIEQJ+glIUBMthT0gjWZiO9iF3IHQ5b0TXaphLoy8cf23AsCAMQsuj4bWo9Q1XJTEXXfQU9dj1v5eHHuA/fScHIKG44cv68uoWxQggmhg7cZ4CELN6uR9pbLoGiyatUO4BeGKBQ720/roHfD/hNmMoZ3O3x9yGQ+V10g3XhbtFW1XhI8b9jaKWY/31dNVvAXAyBIYIO9vvWV+pAfgm+54A9hCGhRysz2DR/BNGf87nKcePMjw7BJNNY+lpDPuEtc+1TvzcKDAls55QEJ3f5kM=
