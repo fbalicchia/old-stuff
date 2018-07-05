@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  janus:
+    image: janusgraph:0.2.0-hadoop2
+    build:
+      dockerfile: Dockerfile.janus
+      args:
+        version: 0.2.0
+        hadoop: hadoop2
+      context: ./
+    ports:
+      - "8182:8182"
+      - "8184:8184"
+    depends_on:
+      - db
+      - index
+  db:
+    image: scylladb/scylla:2.0.1
+    ports:
+     # http://docs.scylladb.com/kb/posix/
+     # REST API
+     - "10000:10000"
+     # CQL ports (native_transport_port)
+     - "9042:9042"
+     # Thrift (rpc_port)
+     - "9160:9160"
+     # Internode
+     - "7000:7000"
+     - "7001:7001"
+     # JMX
+     - "7199:7199"
+     # Prometheus monitoring
+     - "9180:9180"
+     - "9100:9100"
+    volumes:
+     - ./data/scylla/data:/var/lib/scylla
+  index:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.2
+    ports:
+     - "9200:9200"
+     - "9300:9300"
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "http.host=0.0.0.0"
+      - "transport.host=127.0.0.1"
+      - "xpack.security.enabled=false"
+    volumes:
+     - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+  # A web based interface for managing your docker containers.
+  portainer:
+        image: portainer/portainer
+        command: --templates http://templates/templates.json
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./portainer-data:/data
+        # Enable you to access potainers web interface from your host machine
+        # using http://localhost:10001
+        ports:
+            - "10001:9000"

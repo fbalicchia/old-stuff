@@ -1,0 +1,37 @@
+version: '2.2'
+services:
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+      - "8090:8090"
+    env_file:
+      - 'env.influxdb'
+    volumes:
+    # Data persistency
+    # sudo mkdir -p /srv/docker/influxdb/data
+      - /tmp/influxdb/data:/srv/docker/influxdb/data
+  chronograf:
+    image: chronograf:latest
+    volumes:
+      # Mount for chronograf database
+      - /tmp/chronograf/data/:/var/lib/chronograf/
+    links:
+      # Chronograf requires network access to InfluxDB and Kapacitor
+      - influxdb
+    ports:
+      # The WebUI for Chronograf is served on port 8888
+      - "8888:8888"
+    depends_on:
+      - influxdb
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    env_file:
+      - 'env.grafana'
+    links:
+      - influxdb

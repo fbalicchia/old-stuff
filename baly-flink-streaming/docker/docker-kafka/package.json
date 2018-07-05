@@ -1,0 +1,21 @@
+{
+  "name": "input-kafka",
+  "version": "1.0.0",
+  "description": "",
+  "main": "n",
+  "scripts": {
+    "test": "n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "n"
+  },
+  "keywords": [
+    "n"
+  ],
+  "author": "Filippo Balicchia <fbalicchia@gmail.com> (https://github.com/fbalicchia)",
+  "license": "ISC",
+  "dependencies": {
+    "kafka-node": "^2.4.1"
+  }
+}

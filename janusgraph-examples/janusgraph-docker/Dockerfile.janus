@@ -1,0 +1,41 @@
+FROM openjdk:8-jdk
+
+MAINTAINER Filippo Balicchia <filippo.balicchia@openmindonline.it>
+
+LABEL Description="JanusGraph in local Server mode " Version="1.0" Tags="cassandra,elasticsearch,graph,gremlin,Janus"
+
+RUN apt-get update && \
+  apt-get -y install lsof procps wget gpg && \
+  rm -rf /var/lib/apt/lists/*
+
+
+ARG version=0.2.0
+ARG hadoop=hadoop2
+
+ENV JANUS_GROUP="janusgraph" 
+ENV JANUS_USER="janusgraph"
+ENV JANUS_GID="9292" 
+ENV JANUS_UID="9292"
+
+
+RUN echo "===> Install JanusGraph..."
+RUN groupadd -r --gid $JANUS_GID $JANUS_GROUP && \
+  	useradd -r --uid $JANUS_UID --gid $JANUS_GID $JANUS_USER
+
+RUN apt-get update && \
+    apt-get install -y wget unzip htop && \
+    mkdir /workspace && \
+    cd /workspace && \
+    wget https://github.com/JanusGraph/janusgraph/releases/download/v$version/janusgraph-$version-$hadoop.zip && \
+    unzip janusgraph-$version-$hadoop.zip && \
+    rm janusgraph-$version-$hadoop.zip && \
+    mv janusgraph-* janusgraph
+
+COPY janusgraph/run.sh /workspace/janusgraph
+COPY janusgraph/gremlin-server.yaml /workspace/janusgraph/conf/gremlin-server/gremlin-server.yaml
+COPY janusgraph/janusgraph.properties /workspace/janusgraph/janusgraph.properties
+COPY janusgraph/empty-sample.groovy /workspace/janusgraph/scripts/empty-sample.groovy
+
+WORKDIR /workspace/janusgraph
+
+CMD ["/bin/bash", "-e", "/workspace/janusgraph/run.sh"]

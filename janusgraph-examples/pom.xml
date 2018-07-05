@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>it.balyfix</groupId>
+  <artifactId>janusgraph-examples</artifactId>
+  <version>0.0.7-SNAPSHOT</version>
+
+  <name>janusgraph-examples</name>
+
+
+  <modules>
+    <module>plain-java-example</module>
+    <module>tiny-webapp</module>
+  </modules>
+
+  <packaging>pom</packaging>
+
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <properties>
+    <java.version>1.8</java.version>
+    <spring.version>5.0.2.RELEASE</spring.version>
+    <junit.version>4.12</junit.version>
+    <tinkerpop.version>3.3.1</tinkerpop.version>
+    <commons.collections.version>4.1</commons.collections.version>
+    <commons-lang3.version>3.7</commons-lang3.version>
+    <reflection.version>0.9.11</reflection.version>
+    <guava.version>23.0</guava.version>
+    <janus.version>0.3.0-SNAPSHOT</janus.version>
+    <slf4j.version>1.7.21</slf4j.version>
+  </properties>
+
+
+  <build>
+    <!-- Tatami must be configured at the root context (/) of the application server -->
+    <finalName>root</finalName>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>${commons.collections.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+  </dependencies>
+</project>

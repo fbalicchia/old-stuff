@@ -1,0 +1,5 @@
+build
+.idea/
+target/
+spring-data-gremlin-core/target/
+*.iml

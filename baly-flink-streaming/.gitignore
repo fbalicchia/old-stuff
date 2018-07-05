@@ -1,0 +1,15 @@
+#IntelliJ files
+/.idea/
+*.iml
+
+#Eclipse files
+.project
+.classpath
+.settings
+
+/target/
+/stream-core/target
+/flink-streaming-job/target
+/oldcode/target
+/autoconfigure-kafka/target
+/docker/kafka/node_modules

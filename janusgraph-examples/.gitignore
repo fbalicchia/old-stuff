@@ -1,0 +1,9 @@
+build
+.idea/
+target/
+plain-java-example/target/
+tiny-webapp/target/
+*.iml
+.DS_Store
+janusgraph-docker/data/
+janusgraph-docker/portainer-data/

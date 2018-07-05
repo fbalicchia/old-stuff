@@ -1,0 +1,30 @@
+{
+  "name": "logagent-input-filter-grok",
+  "version": "1.0.3",
+  "description": "Logagent grok input filter plugin ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fbalicchia/logagent-input-filter-grok.git"
+  },
+  "keywords": [
+     "log",
+    "management",
+    "logagent",
+    "filter",
+    "grok",
+    "sematext"
+  ],
+  "author": "Filippo Balicchia",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/fbalicchia/logagent-input-filter-grok/issues"
+  },
+  "homepage": "https://github.com/fbalicchia/logagent-input-filter-grok#readme",
+  "dependencies": {
+    "node-grok": "^2.0.3"
+  }
+}

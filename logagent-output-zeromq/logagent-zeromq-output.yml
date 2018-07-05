@@ -1,0 +1,15 @@
+# Global options
+options:
+  includeOriginalLine: false
+
+input:
+  stdin: true
+
+output:
+  zeromq: 
+    module: output-zeromq
+    address_zmq: 127.0.0.1
+    port_zmq: 3000
+    # for push-pull = 0  Request-response = 1  Publish-subscribe= 2
+    pattern: 0
+    topic: topic-example

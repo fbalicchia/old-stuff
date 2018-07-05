@@ -1,0 +1,17 @@
+# Global options
+options:
+  includeOriginalLine: false
+
+input:
+  stdin: true
+
+output:
+  kafka: 
+   module: logagent-output-kafka
+   host: localhost
+   port: 9092
+   topic: test
+   requireAcks: 1
+   sslEnable: false
+   sslOptions: 
+      - rejectUnauthorized: false

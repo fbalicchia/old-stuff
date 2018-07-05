@@ -1,0 +1,328 @@
+# Spring Data Gremlin
+
+Spring data gremlin makes it easier to implement Graph based repositories. This module extends [Spring Data](http://projects.spring.io/spring-data) to allow support for potentially any [Graph database](https://en.wikipedia.org/wiki/Graph_database) that implements the [Tinkerpop Blueprints 3.x API](https://github.com/tinkerpop/blueprints/wiki). 
+
+This project in under construction and was forked and ispirated directly [from](https://github.com/gjrwebber/spring-data-gremlin) we tring to migrated code to Tinkerpop 3.0 and for the moment we are focus only on JanusGraph. 
+
+
+
+## Features
+
+- All the great features of [Spring Data](http://projects.spring.io/spring-data)
+- Support [JanusDB](http://janusgraph.org/)  out of the box
+- Schema creation in supported databases
+- Support to build repositories based on Spring using our [custom set of annotations](https://github.com/gjrwebber/org/springframework/data/gremlin/annotation)
+- Vertex and Edge repository support
+- Pagination support
+- Unique, non-unique and spatial indices supported
+- Support for [Gremlin query language](http://gremlin.tinkerpop.com/) through the ```@Query``` annotation
+- JavaConfig based repository configuration by introducing @EnableGremlinRepositories
+- ```Map``` and ```CompositeResult``` query result objects
+- ORM support for java.io.Serializable and arbitrary classes as JSON
+
+
+## Default Schema Generation
+
+Below is a list of default annotations used by the ```DefaultSchemaGenerator```.
+
+
+- ```@Vertex``` maps an ```Object``` to a ```Vertex```
+- ```@Edge``` maps an ```Object``` to an ```Edge```
+- ```@Embeddable``` maps an ```Object``` to set of properties to be embedded in a "parent" vertex
+- ```@Id``` maps an instance variable to the vertex or edge ID
+- ```@Index``` used for indexing properties including unique, spatial and non-unique
+- ```@Property``` maps an instance variable to a vertex property (optional, only required if you want to name it differently, or serialize it as JSON)
+- ```@Embed``` embeds the referenced ```Object``` in the "parent" vertex
+- ```@PropertyOverride``` can be used within ```@Embed``` for overriding properties within ```@Embeddable```s. 
+- ```@Ignore``` ignores a variable
+- ```@Enumerated``` allows for mapping an enum as an ordinal, otherwise String is the default mapping
+- ```@Link``` creates a link from this vertex to the referenced ```Object```'s vertex or ```Collection```'s verticies using the name of the field as default or the optional ```type``` parameter as the link label
+- ```@LinkVia``` creates an ```Edge``` based the the referenced ```Object``` or ```Collection``` which must be a ```@Edge```
+- ```@FromVertex``` defines the starting (or OUT) vertex of a ```@Edge```
+- ```@ToVertex``` defines the ending (or IN) vertex of a ```@Edge```
+
+
+## JPA Schema Generation
+
+Below is a list of supported annotations used by the ```JpaSchemaGenerator```:
+
+- ```@Entity``` maps an ```Object``` to a ```Vertex```
+- ```@Embeddable``` maps an ```Object``` to set of properties to be embedded in a "parent" vertex
+- ```@Id``` maps an instance variable to the vertex ID
+- ```@Column``` maps an instance variable to a vertex property
+- ```@Embedded``` embeds the referenced ```Object``` in the "parent" vertex
+- ```@AttributeOverrides``` and ```@AttributeOverride``` can be used for overriding ```@Embedded``` property names.   
+- ```@OneToOne``` creates an outgoing link from this vertex to the referenced ```Object```'s vertex using the name of the field as default or the optional ```@Column```'s name field as the link label
+- ```@OneToMany``` creates an outgoing link from this vertex to all of the referenced ```Collection```'s vertices using the name of the field as default or the optional ```@Column```'s name field as the link label
+- ```@Transient``` marks an instance variable as transient
+- ```@Enumerated``` allows for mapping an enum as a ordinal, otherwise String is the default mapping
+
+## Getting Started
+
+### Download dependencies
+
+Currenlty only SNAPSHOT builds are being uploaded to sonatype so you will need to add ```https://oss.sonatype.org/content/repositories/snapshots/``` repository URL to your build configuration.
+
+
+
+#### Database dependency
+**JanusDB** - com.github.gjrwebber:spring-data-gremlin-titan:0.1.0-SNAPSHOT
+
+#### Schema generator dependency
+**Default** - No further dependency  
+**JPA** - com.github.gjrwebber:spring-data-gremlin-schemagen-jpa:0.1.0-SNAPSHOT  
+
+
+### Create you domain model
+
+**Note:** Have a look at [the test subproject](https://github.com/fbalicchia/spring-data-gremlin) for more examples.
+
+#### Person
+
+```
+@Vertex
+public class Person {
+
+    @Id
+    private String id;
+
+    @Property("customer_name")
+    private String name;
+    
+    // No need to annotate simple types
+    private boolean active;
+
+    @Link("lives_at")
+    private Address address;
+
+    @LinkVia
+    private Set<Located> locations;
+
+    @LinkVia
+    private Located currentLocation;
+    
+    // Annotation optional
+    private Set<House> owned;
+    
+    @Property(type = JSON) // Will serialize as JSON even though House is a java.io.Serializable
+    private House owns;
+
+    @Property(type = JSON)
+    private Set<Pet> pets;
+
+    // Annotation optional
+    private Pet favouritePet;
+
+}
+```
+
+#### Address
+
+```
+@Vertex
+public class Address {
+
+    @Id
+    private String id;
+
+    @Embed(propertyOverrides = { @PropertyOverride(name = "name", property = @Property("countryName")) })
+    private Country country;
+
+    private String city;
+
+    private String street;
+}
+```
+
+#### Country (embedded)
+
+```
+@Embeddable
+public class Country {
+	private String name;
+}
+```
+
+#### Location
+
+```
+@Vertex
+public class Location {
+
+    @Id
+    private String id;
+    
+    private Date date;
+
+    @Index(type = SPATIAL_LATITUDE)
+    private double latitude;
+    
+    @Index(type = SPATIAL_LONGITUDE)
+    private double longitude;
+
+}
+```
+
+#### Located
+```
+@Edge("was_located")
+public class Located {
+
+    @Id
+    private String id;
+
+    @Property("location_date")
+    private Date date;
+
+    @FromVertex
+    private Person person;
+
+    @ToVertex
+    private Location location;
+    
+}
+```
+
+#### House (Serializable)
+```
+public class House implements Serializable {
+
+    private int rooms;
+
+}
+```
+
+#### Pet (will be saved as a JSON String)
+```
+public class Pet {
+
+    public enum TYPE {
+        CAT,DOG,HORSE;
+    }
+
+    private String name;
+
+    private TYPE type;
+}
+```
+
+Now create a repository for the Vertex Person:
+
+```
+public interface PersonRepository extends GremlinRepository<Person> {
+
+    List<Person> findByLastName(String lastName);
+
+    List<Person> findByLastNameLike(String lastName);
+
+    List<Person> findByFirstNameAndLastName(String firstName, String lastName);
+
+    List<Person> findByFirstNameOrLastName(String firstName, String lastName);
+
+    List<Person> findByFirstNameLike(String string);
+
+    @Query(value = "graph.V().has('firstName', ?)")
+    List<Person> findByFirstName(String firstName);
+
+    @Query(value = "graph.V().has('firstName', ?)")
+    Page<Person> findByFirstName(String firstName, Pageable pageable);
+
+    @Query(value = "graph.V().has('firstName', ?)")
+    List<Map<String, Object>> findMapByFirstName(String firstName);
+
+    @Query(value = "graph.V().has('firstName', ?)")
+    Map<String, Object> findSingleMapByFirstName(String firstName);
+
+    List<Person> findByAddress_City(String city);
+
+    @Query(value = "delete vertex from (select from Person where firstName <> ?)", nativeQuery = true, modify = true)
+    Integer deleteAllExceptPerson(String firstName);
+
+    @Query(value = "select expand(in('was_located_at')) from (select from Location where [latitude,longitude,$spatial] near [?,?,{\"maxDistance\":?}])", nativeQuery = true)
+    Page<Person> findNear(double latitude, double longitude, double radius, Pageable pageable);
+
+}
+
+```
+
+And one for the Edge Located:
+
+```
+public interface LocatedRepository extends GremlinRepository<Located> {
+
+    @Query(value = "graph.V().has('firstName', ?).outE('Location')")
+    List<Located> findAllLocatedForUser(String name);
+}
+
+```
+
+Wire it up:
+
+```
+
+@Configuration
+@EnableTransactionManagement
+@EnableGremlinRepositories(basePackages = "test.repos", repositoryFactoryBeanClass = GremlinRepositoryFactoryBean.class)
+public class Configuration {
+
+    @Bean
+    public OrientDBGremlinGraphFactory orientDBGraphFactory() {
+        OrientDBGremlinGraphFactory factory = new OrientDBGremlinGraphFactory();
+        factory.setUrl("memory:spring-data-orientdb-db");
+        factory.setUsername("admin");
+        factory.setPassword("admin");
+        return factory;
+    }
+
+    @Bean
+    public GremlinTransactionManager transactionManager() {
+        return new GremlinTransactionManager(orientDBGraphFactory());
+    }
+
+    @Bean
+    public GremlinSchemaFactory schemaFactory() {
+        return new GremlinSchemaFactory();
+    }
+
+    @Bean
+    public SchemaGenerator schemaGenerator() {
+        return new DefaultSchemaGenerator(new OrientDbIdEncoder());
+    }
+
+    @Bean
+    public SchemaWriter schemaWriter() {
+        return new OrientDbSchemaWriter();
+    }
+
+    @Bean
+    public static GremlinBeanPostProcessor gremlinSchemaManager(SchemaGenerator schemaGenerator) {
+        return new GremlinBeanPostProcessor(schemaGenerator, "test.domain");
+    }
+
+    @Bean
+    public GremlinGraphAdapter graphAdapter() {
+        return new OrientDBGraphAdapter();
+    }
+
+    @Bean
+    public GremlinRepositoryContext databaseContext(GremlinGraphFactory graphFactory, GremlinGraphAdapter graphAdapter, GremlinSchemaFactory schemaFactory, SchemaWriter schemaWriter) {
+        return new GremlinRepositoryContext(graphFactory, graphAdapter, schemaFactory, schemaWriter, OrientDBGremlinRepository.class, NativeOrientdbGremlinQuery.class);
+    }
+}
+```
+
+##TODO
+
+- Spring auto configuration 
+- ~~Many to many relationships~~
+- ~~Links as entities~~
+- ~~Edge repositories~~
+- ~~Serializable class mapping~~
+- ~~Arbitrary class mapping~~
+- Lazy fetching
+- Index for multiple properties
+- Allow for IDs other than String
+- More [Blueprints](https://github.com/tinkerpop/blueprints/wiki) implementations ([Neo4j](https://en.wikipedia.org/wiki/Neo4j), [ArangoDB](https://www.arangodb.com), [Blazegraph](http://www.blazegraph.com/bigdata), etc.)
+
+
+Command to check data 

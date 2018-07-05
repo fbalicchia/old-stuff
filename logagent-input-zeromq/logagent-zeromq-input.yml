@@ -1,0 +1,19 @@
+# Global options
+options:
+  includeOriginalLine: false
+
+input:
+  zeromq: 
+    module: logagent-input-zeromq
+    host: 127.0.0.1
+    port_zmq: 3000
+    # for Fire-and-forget = 0  Request-response = 1  Publish-subscribe= 2
+    pattern: 2
+    topic: topic-example
+
+output:
+  stdout: ldjson # use 'pretty' for pretty json or 'yaml' 
+  # elasticsearch: 
+  #   module: elasticsearch
+  #  url: http://localhost:9200
+  #  index: test

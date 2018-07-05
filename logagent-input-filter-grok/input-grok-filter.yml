@@ -1,0 +1,18 @@
+input:
+  stdin: true
+inputFilter:
+  - module: grok
+    config:
+      matchSource: access\.log|nginx\.log
+      # Logagent use node-grok and by default is load load different patterns. but using 'matchSource' parameter is possiible to define a custom one
+      # please see https://github.com/Beh01der/node-grok/tree/master/lib/patterns to find patter loaded at bootstrap
+      patterns: 
+        - 'wrong'
+        - '%{IP:client} \[%{TIMESTAMP_ISO8601:timestamp}\] "%{WORD:method} %{URIHOST:site}%{URIPATHPARAM:url}" %{INT:code} %{INT:request} %{INT:response} - %{NUMBER:took} \[%{DATA:cache}\] "%{DATA:mtag}" "%{DATA:agent}"'
+      patternsFile: /opt/logagent-js/java
+      # Parser search patternId to load grok patter. For example patterns Logagent grok filter plugin in aws file
+      # patterId S3_REQUEST_LINE load (?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest}) 
+      patternId: JAVACLASS
+      
+output:
+  stdout: yaml

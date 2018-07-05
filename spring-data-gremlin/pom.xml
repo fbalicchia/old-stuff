@@ -1,0 +1,171 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.springframework.data</groupId>
+  <artifactId>spring-data-gremlin-tp3</artifactId>
+  <version>0.0.7-SNAPSHOT</version>
+
+  <name>spring-data-gremlin</name>
+
+
+  <modules>
+    <module>spring-data-gremlin-core</module>
+    <module>spring-data-gremlin-janus</module>
+    <module>spring-data-gremlin-test</module>
+    <module>spring-data-gremlin-schemagen-jpa</module>
+  </modules>
+
+  <packaging>pom</packaging>
+
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <parent>
+    <groupId>org.springframework.data.build</groupId>
+    <artifactId>spring-data-parent</artifactId>
+    <version>2.0.2.RELEASE</version>
+  </parent>
+
+  <properties>
+    <java.version>1.8</java.version>
+    <spring.version>5.0.2.RELEASE</spring.version>
+    <junit.version>4.12</junit.version>
+    <spring.data.version>2.0.2.RELEASE</spring.data.version>
+    <jackson.version>2.9.3</jackson.version>
+    <tinkerpop.version>3.3.1</tinkerpop.version>
+    <commons.collections.version>4.1</commons.collections.version>
+    <commons-lang3.version>3.7</commons-lang3.version>
+    <reflection.version>0.9.11</reflection.version>
+    <guava.version>23.0</guava.version>
+    <janus.version>0.2.0</janus.version>
+  </properties>
+
+
+  <build>
+    <!-- Tatami must be configured at the root context (/) of the application server -->
+    <finalName>root</finalName>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12.4</version>
+        <configuration>
+          <includes>
+            <include>**/Test*.java</include>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+            <include>**/*TestCase.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
+      <version>${spring.data.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tinkerpop</groupId>
+      <artifactId>gremlin-driver</artifactId>
+      <version>${tinkerpop.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tinkerpop</groupId>
+      <artifactId>gremlin-groovy</artifactId>
+      <version>${tinkerpop.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tinkerpop</groupId>
+      <artifactId>gremlin-core</artifactId>
+      <version>${tinkerpop.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tinkerpop</groupId>
+      <artifactId>tinkergraph-gremlin</artifactId>
+      <version>${tinkerpop.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>${commons.collections.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+      <version>${reflection.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+  </dependencies>
+</project>
