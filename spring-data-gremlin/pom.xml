@@ -38,7 +38,7 @@
     <spring.version>5.0.2.RELEASE</spring.version>
     <junit.version>4.12</junit.version>
     <spring.data.version>2.0.2.RELEASE</spring.data.version>
-    <jackson.version>2.9.3</jackson.version>
+    <jackson.version>2.10.1</jackson.version>
     <tinkerpop.version>3.3.1</tinkerpop.version>
     <commons.collections.version>4.1</commons.collections.version>
     <commons-lang3.version>3.7</commons-lang3.version>
