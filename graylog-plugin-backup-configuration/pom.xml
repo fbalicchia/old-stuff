@@ -44,7 +44,7 @@
         <graylog.plugin-dir>/usr/share/graylog-server/plugin</graylog.plugin-dir>
         <mokito.version>1.10.19</mokito.version>
         <thruth.version>0.29</thruth.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <autovale.version>1.3</autovale.version>
         <zzip.version>1.9</zzip.version>
         <awssdk.version>1.11.105</awssdk.version>
